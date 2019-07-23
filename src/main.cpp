@@ -8,6 +8,7 @@
 using namespace std;
 
 const std::string info="<p>A Fake SRun Auth Interface Server By C++ </p> <p>2019 Copyright(C) Powered by E-HAUT Team </p>";
+const std::string testMode="on";
 const std::string version="V1.0.0";
 
 struct UserInfo
@@ -160,7 +161,14 @@ int main(void) {
         string u=uri;
         u=u.substr(1);
         split_string(u,vec,"/");
-        if(string(uri).compare("/cgi-bin/srun_portal") == 0 && !( content.empty() || content.compare("")==0))
+        if(string(uri).compare("/testmode")==0 ) 
+        {
+            /* Html头部输出，固定格式请勿更改 */
+            std::cout << "Content-Type: text/plain\r\n\r\n";
+            /* Html头部输出结束 */
+            std::cout<<testMode;
+        }
+        else if(string(uri).compare("/cgi-bin/srun_portal") == 0 && !( content.empty() || content.compare("")==0))
         {
             vector <std::string> c; //处理 &
             vector <std::string> v; //处理 key=value
