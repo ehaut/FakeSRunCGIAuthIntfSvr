@@ -168,6 +168,276 @@ int main(void) {
             /* Html头部输出结束 */
             std::cout<<testMode;
         }
+        else if(string(uri).compare("/cgi-bin/srun_portal")>0)
+        {
+            int pos=string("/cgi-bin/srun_portal").length()+1;
+            string u=string(uri);
+            u=u.substr(pos,u.length());
+            vector <std::string> c; //处理 &
+            vector <std::string> v; //处理 key=value
+            split_string(u,c,"&");
+            bool signal[6]={
+                false, //username
+                false, //ac_id
+                false, //action
+                false, //type
+                false, //n
+                false //passsword
+            };
+            bool isLogin=false;
+            
+            // std::cout << "Content-Type: text/plain\r\n\r\n";
+            // for(int i=0;i<c.size();i++)
+            // {
+            //     string temp="";
+            //     temp=c[i]+" ";
+            //     std::cout<<c[i]<<std::endl;
+            //     v.clear();
+            //     split_string(temp,v,"=");
+            //     std::cout<<v[0]<<" "<<v[1]<<std::endl;
+            //     std::cout<<"r"<<!(v[1].empty()||v[1]==""||v[1]==" ")<<std::endl;
+            //     v.clear();
+            // }
+            bool flag=false;
+            OnlineInfo onlineInfo;
+            for(int i=0;i<c.size();i++)
+            {   
+                string temp="";
+                temp=c[i]+"";
+                v.clear();
+                split_option(temp,v,"=");
+                std::cout<<"r"<<!(v[1].empty()||v[1]==""||v[1]==" ")<<std::endl;
+                if(v[0].compare("action")==0)
+                {
+                    if(v[1].compare("login")==0)
+                    {
+                        signal[2]=true;
+                        isLogin=true;
+                        continue;
+                    }
+                    else if(v[1].compare("logout")==0)
+                    {
+                        signal[2]=true;
+                        continue;
+                    }
+                    else
+                    {
+                         /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                else if(v[0].compare("username")==0)
+                {
+                    if(!(v[1].empty()||v[1]==""||v[1]==" "))
+                    {
+                        signal[0]=true;
+                        onlineInfo.onlineUserInfo.username=v[1];
+                        continue;
+                    }
+                    else
+                    {
+                        /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                else if(v[0].compare("ac_id")==0)
+                {
+                    if(!(v[1].empty()||v[1]==""||v[1]==" "))
+                    {
+                        signal[1]=true;
+                        onlineInfo.onlineUserInfo.acid=v[1];
+                        continue;
+                    }
+                    else
+                    {
+                         /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                else if(v[0].compare("type")==0)
+                {
+                    if(!(v[1].empty()||v[1]==""||v[1]==" "))
+                    {
+                        signal[3]=true;
+                        onlineInfo.onlineUserInfo.type=v[1];
+                        continue;
+                    }
+                    else
+                    {
+                        /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                else if(v[0].compare("n")==0)
+                {
+                    if(!(v[1].empty()||v[1]==""||v[1]==" "))
+                    {
+                        signal[4]=true;
+                        onlineInfo.onlineUserInfo.n=v[1];
+                        continue;
+                    }
+                    else
+                    {
+                         /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                else if(v[0].compare("password")==0)
+                {
+                    if(!(v[1].empty()||v[1]==""||v[1]==" "))
+                    {
+                        signal[5]=true;
+                        onlineInfo.onlineUserInfo.password=v[1];
+                        continue;
+                    }
+                    else
+                    {
+                        /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        flag=true;
+                        break;
+                    }
+                }
+                v.clear();
+            }
+            if(flag==false)
+            {
+                bool f=false;
+                int end=(isLogin)?6:5;
+                for(int i=0;i<end;i++)
+                {
+                    // std::cout << "Content-Type: text/plain\r\n\r\n";
+                    // cout<<signal[i]<<endl;
+                    if(signal[i]==false)
+                    {
+                        f=true;
+                        /* Html头部输出，固定格式请勿更改 */
+                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                        /* Html头部输出结束 */
+                        std::cout<<"missing_required_parameters_error";
+                        break;
+                    }
+                } 
+                if(f==false)
+                {
+                    if(isLogin)
+                    {
+                        std::cout << onlineInfo.onlineIP <<" "<<string(ip)<<std::endl;
+                        if(onlineInfoVector.size()==0)
+                        {
+                            onlineInfo.onlineIP=string(ip);
+                            onlineInfo.onlineUserInfo.isOnline=true;
+                            onlineInfoVector.push_back(onlineInfo);
+                            std::cout << "Content-Type: text/plain\r\n\r\n";
+                            /* Html头部输出结束 */
+                            std::cout<<"login_ok,1573330604,0,0,0.0,0.0,0,0,0,0,0,1.00";
+                        }
+                        else
+                        {
+                            bool signal=false;
+                            for(int i=0;i<onlineInfoVector.size();i++)
+                            {
+                                OnlineInfo temp=onlineInfoVector[i];
+                                //std::cout << onlineInfo.onlineIP <<" "<<string(ip)<<std::endl;
+                                if(temp.onlineIP==string(ip))
+                                {
+                                    signal=true;
+                                    if(temp.onlineUserInfo.isOnline==true)
+                                    {
+                                        /* Html头部输出，固定格式请勿更改 */
+                                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                                        /* Html头部输出结束 */
+                                        std::cout<<"ip_already_online_error";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        temp.onlineUserInfo.isOnline=true;
+                                        /* Html头部输出，固定格式请勿更改 */
+                                        std::cout << "Content-Type: text/plain\r\n\r\n";
+                                        /* Html头部输出结束 */
+                                        std::cout<<"login_ok,1573330604,0,0,0.0,0.0,0,0,0,0,0,1.00";
+                                        break;
+                                    }
+                                }
+                            }
+                            if(signal==false)
+                            {
+                                onlineInfo.onlineIP=string(ip);
+                                onlineInfo.onlineUserInfo.isOnline=true;
+                                onlineInfoVector.push_back(onlineInfo);
+                                /* Html头部输出，固定格式请勿更改 */
+                                std::cout << "Content-Type: text/plain\r\n\r\n";
+                                /* Html头部输出结束 */
+                                std::cout<<"login_ok,1573330604,0,0,0.0,0.0,0,0,0,0,0,1.00";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        bool signal=false;
+                        for(int i=0;i<onlineInfoVector.size();i++)
+                        {
+                            OnlineInfo temp=onlineInfoVector[i];
+                            if(temp.onlineIP==string(ip))
+                            {
+                                signal=true;
+                                if(temp.onlineUserInfo.isOnline==false)
+                                {
+                                    /* Html头部输出，固定格式请勿更改 */
+                                    std::cout << "Content-Type: text/plain\r\n\r\n";
+                                    /* Html头部输出结束 */
+                                    std::cout<<"You are not online.";
+                                }
+                                else
+                                {
+                                    temp.onlineUserInfo.isOnline=false;
+                                    onlineInfoVector.erase(onlineInfoVector.begin()+i);
+                                    /* Html头部输出，固定格式请勿更改 */
+                                    std::cout << "Content-Type: text/plain\r\n\r\n";
+                                    /* Html头部输出结束 */
+                                    std::cout<<"logout_ok";
+                                }
+                            }
+                        }
+                        if(signal==false)
+                        {
+                            //onlineInfo.onlineIP=string(ip);
+                            //onlineInfo.onlineUserInfo.isOnline=true;
+                            //onlineInfoVector.push_back(onlineInfo);
+                            /* Html头部输出，固定格式请勿更改 */
+                            std::cout << "Content-Type: text/plain\r\n\r\n";
+                            /* Html头部输出结束 */
+                            std::cout<<"You are not online.";
+                        }
+                    }
+                }
+            }
+            c.clear();
+            v.clear();
+        }
         else if(string(uri).compare("/cgi-bin/srun_portal") == 0 && !( content.empty() || content.compare("")==0))
         {
             vector <std::string> c; //处理 &
